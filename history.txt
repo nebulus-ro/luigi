@@ -1,0 +1,34 @@
+- using Python 3.10.5
+- install luigi (pip install wheel luigi) !!! must have admin rights (or a different environment)
+
+
+Test 1
+======
+- create task StockTwitScrape (file: load_twits.py)
+- run: set PYTHONPATH=E:\Work\A5\production architecture\luigi
+- run: luigi --module load_twits StockTwitScrape --local-scheduler
+
+
+Test 2
+======
+- create file hello.py with two tasks
+
+# --local-scheduler
+
+- run: luigi --module hello HelloWorld --local-scheduler (create output)
+- run: luigi --module hello NameSubstituter --local-scheduler  --name Marius (this one has a dependency, will run HelloWorld before, and need a parameter 'name')
+
+#--scheduler-host
+- run: luigid (start a service, can see stuff here: http://localhost:8082/)
+- run: python hello.py --scheduler-host localhost NameSubstituter --name Marius
+
+Test3
+=====
+- create file hello-world.py with a simple task
+
+- run this in linux: PYTHONPATH='.' luigi --module hello-world HelloLuigi --local-scheduler
+- run this in windows: set PYTHONPATH=. & luigi --module hello-world HelloLuigi --local-scheduler
+- or this for localhost: python hello-world.py --scheduler-host localhost HelloLuigi
+
+- create file word-frequency.py
+- run: python word-frequency.py --scheduler-host localhost GetTopBooks
