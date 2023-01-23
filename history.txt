@@ -32,3 +32,5 @@ Test3
 
 - create file word-frequency.py
 - run: python word-frequency.py --scheduler-host localhost GetTopBooks
+- run: python word-frequency.py --scheduler-host localhost TopWords --workers 2
+- run: luigi-deps-tree --module word-frequency TopWords

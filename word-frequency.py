@@ -3,6 +3,7 @@ import luigi
 from bs4 import BeautifulSoup
 from collections import Counter
 import pickle
+import logging
 
 class GetTopBooks(luigi.Task):
     """
@@ -44,6 +45,9 @@ class DownloadBooks(luigi.Task):
         return luigi.LocalTarget("data/downloads/{}.txt".format(self.FileID))
 
     def run(self):
+        # Use the luigi to log to logfile
+        logger = logging.getLogger('luigi')
+        logger.info(f"Running --> DownloadBooks.Task({self.FileID})")
         with self.input().open("r") as i:
             URL = i.read().splitlines()[self.FileID]
 
@@ -74,6 +78,9 @@ class CountWords(luigi.Task):
         )
 
     def run(self):
+        # Use the luigi to log to logfile
+        logger = logging.getLogger('luigi')
+        logger.info(f"Running --> CountWords.Task({self.FileID})")
         with self.input().open("r") as i:
             word_count = Counter(i.read().split())
 
@@ -99,6 +106,9 @@ class TopWords(luigi.Task):
         return luigi.LocalTarget("data/summary.txt")
 
     def run(self):
+        # Use the luigi to log to logfile
+        logger = logging.getLogger('luigi')
+        logger.info("Running --> TopWords.Task")
         total_count = Counter()
         for input in self.input():
             with input.open("rb") as infile:
