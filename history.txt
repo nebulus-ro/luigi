@@ -34,3 +34,8 @@ Test3
 - run: python word-frequency.py --scheduler-host localhost GetTopBooks
 - run: python word-frequency.py --scheduler-host localhost TopWords --workers 2
 - run: luigi-deps-tree --module word-frequency TopWords
+
+Production tests
+================
+
+python run-flow.py word-frequency.TopWords marius
