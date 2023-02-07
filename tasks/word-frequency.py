@@ -4,6 +4,10 @@ from bs4 import BeautifulSoup
 from collections import Counter
 import pickle
 import logging
+import os
+
+# os.chdir('E:\Work\A5\production_architecture\luigi')
+print(os.getcwd())
 
 class GetTopBooks(luigi.Task):
     """
@@ -11,7 +15,8 @@ class GetTopBooks(luigi.Task):
     """
 
     def output(self):
-        return luigi.LocalTarget("data/books_list.txt")
+        id = luigi.configuration.get_config().get('session', 'id')
+        return luigi.LocalTarget(f"sessions/{id}/data/books_list.txt")
 
     def run(self):
         resp = requests.get("http://www.gutenberg.org/browse/scores/top")
@@ -42,12 +47,16 @@ class DownloadBooks(luigi.Task):
         return GetTopBooks()
 
     def output(self):
-        return luigi.LocalTarget("data/downloads/{}.txt".format(self.FileID))
+        id = luigi.configuration.get_config().get('session', 'id')
+        return luigi.LocalTarget(f"sessions/{id}/data/downloads/{self.FileID}.txt")
 
     def run(self):
         # Use the luigi to log to logfile
         logger = logging.getLogger('luigi')
         logger.info(f"Running --> DownloadBooks.Task({self.FileID})")
+        # TEST TO CREATE EXCEPTION
+        # if self.FileID == 5:
+            # raise Exception("Sorry, not this time")
         with self.input().open("r") as i:
             URL = i.read().splitlines()[self.FileID]
 
@@ -72,8 +81,9 @@ class CountWords(luigi.Task):
         return DownloadBooks(FileID=self.FileID)
 
     def output(self):
+        id = luigi.configuration.get_config().get('session', 'id')
         return luigi.LocalTarget(
-            "data/counts/count_{}.pickle".format(self.FileID),
+            f"sessions/{id}/data/counts/count_{self.FileID}.pickle",
             format=luigi.format.Nop
         )
 
@@ -103,7 +113,8 @@ class TopWords(luigi.Task):
         return requiredInputs
 
     def output(self):
-        return luigi.LocalTarget("data/summary.txt")
+        id = luigi.configuration.get_config().get('session', 'id')
+        return luigi.LocalTarget(f"sessions/{id}/data/summary.txt")
 
     def run(self):
         # Use the luigi to log to logfile

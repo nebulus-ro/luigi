@@ -33,9 +33,25 @@ Test3
 - create file word-frequency.py
 - run: python word-frequency.py --scheduler-host localhost GetTopBooks
 - run: python word-frequency.py --scheduler-host localhost TopWords --workers 2
-- run: luigi-deps-tree --module word-frequency TopWords
+- run: luigi-deps-tree --module word-frequency TopWords (not working!)
 
 Production tests
 ================
 
-python run-flow.py word-frequency.TopWords marius
+python flow-run.py word-frequency.TopWords marius
+python flow-continue.py <session-id> marius
+python flow-status.py <session-id> marius
+python flow-extend.py <session-id> tools.FileExistTask data/summary.txt marius
+
+Luigi CLI Tools
+===============
+- luigi
+- luigid
+- luigi-grep: is used to search for workflows using the luigi scheduler's json api [-h] [--scheduler-host SCHEDULER_HOST] [--scheduler-port SCHEDULER_PORT] [--prefix PREFIX] [--status STATUS]
+- luigi-deps: 
+- luigi-deps-tree:
+
+SQLite stuff
+============
+python flow-run.py sqlite2.TestExportSQLite marius
+python flow-continue.py 02 marius
