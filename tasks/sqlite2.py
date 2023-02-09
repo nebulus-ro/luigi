@@ -10,7 +10,7 @@ class SQLiteTarget(luigi.Target):
     def __init__(self, value = None):
         self.value = value
         id = luigi.configuration.get_config().get('session', 'id')
-        self.database_path = f'sessions/{id}/{SQLiteTarget.STAGE_DB}'
+        self.database_path = os.path.join('sessions', id, self.STAGE_DB)
 
     def exists(self):
         if not os.path.exists(self.database_path):
