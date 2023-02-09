@@ -5,4 +5,8 @@ sessions
 tools/tmp
 tools/__pycache__
 staluigi/__pycache__
+staluigi.egg-info
+build
+
 *.zip
+in-data/*.csv

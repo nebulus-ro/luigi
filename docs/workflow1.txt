@@ -1,0 +1,4 @@
+CSV file as input -> dummy test (eg. check for missing data) -> transcode -> write in sqlite
+
+
+READ file -> check -> transcode -> DB WRITE

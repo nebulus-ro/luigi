@@ -55,3 +55,16 @@ SQLite stuff
 ============
 python flow-run.py sqlite2.TestExportSQLite marius
 python flow-continue.py 02 marius
+
+Package
+=======
+
+From folder staluigi run this:
+pip install .
+or 
+python setup.py install
+
+Workflow1
+=========
+
+python flow-run.py workflow1.TakeInputFile marius

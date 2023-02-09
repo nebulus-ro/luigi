@@ -3,6 +3,13 @@ import sqlite3
 import os
 import csv
 
+def table_exists(conn, tableName):
+    try:
+        conn.execute(f"SELECT 1 FROM {tableName} LIMIT 1")
+        return True
+    except sqlite3.OperationalError:
+        return False
+
 class SQLiteTarget(luigi.Target):
 
     STAGE_DB = 'stage.sqlite'
@@ -50,15 +57,13 @@ class TestCopyToTable(luigi.Task):
     def run(self):
         with self.output().connect() as conn:
             # if table tests to not exists, create it
-            try:
-                conn.execute(f"SELECT 1 FROM {TestCopyToTable.TEST_TABLE} LIMIT 1")
-            except:
-                conn.execute(f"CREATE TABLE {TestCopyToTable.TEST_TABLE} (id INTEGER PRIMARY KEY, name TEXT)")
+            if not table_exists(conn, self.TEST_TABLE):
+                conn.execute(f"CREATE TABLE {self.TEST_TABLE} (id INTEGER PRIMARY KEY, name TEXT)")
         # Start a transaction
         conn.execute("BEGIN TRANSACTION")
         try:
             conn.execute(f"INSERT INTO targets (name) VALUES ('{str(self)}')")
-            conn.execute(f"INSERT INTO {TestCopyToTable.TEST_TABLE} (id, name) VALUES (2, 'Jane')")
+            conn.execute(f"INSERT INTO {self.TEST_TABLE} (id, name) VALUES (2, 'Jane')")
             # commit the transaction
             conn.commit()
         except:
