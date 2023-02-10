@@ -1,0 +1,41 @@
+{
+    "workbench.startupEditor": "none",
+    "extensions.autoCheckUpdates": false,
+    "update.showReleaseNotes": false,
+    "update.mode": "none",
+    "telemetry.enableCrashReporter": false,
+    "extensions.autoUpdate": false,
+    "telemetry.enableTelemetry": false,
+    "npm.fetchOnlinePackageInfo": false,
+    "workbench.settings.enableNaturalLanguageSearch": false,
+    "workbench.enableExperiments": false,
+    "terminal.integrated.windowsEnableConpty": false,
+    "terminal.external.windowsExec": "C:/windows/system32/cmd.exe",
+    "git.path": "C:/Users/felecni/AppData/Local/Microsoft/AppV/Client/Integration/FD19DC5B-9750-48C4-8C82-71001E35740E/Root/bin/git.exe",
+    "terminal.integrated.profiles.windows": {
+        "PowerShell": {
+            "source": "PowerShell",
+            "icon": "terminal-powershell"
+        },
+        "Command Prompt": {
+            "path": [
+                "${env:windir}\\Sysnative\\cmd.exe",
+                "${env:windir}\\System32\\cmd.exe"
+            ],
+            "args": [],
+            "icon": "terminal-cmd"
+        },
+        "Anaconda": {
+            "path": ["${env:windir}\\System32\\cmd.exe"],
+            "args": [
+                "/K",
+                "c:\\PROGRA~1\\Anaconda3\\Scripts\\activate.bat",
+                "c:\\PROGRA~1\\Anaconda3"
+            ]   
+        },
+        "Git Bash": {
+            "source": "Git Bash",
+            "command": "${env:LOCALAPPDATA}\\Microsoft\\AppV\\Client\\Integration\\FD19DC5B-9750-48C4-8C82-71001E35740E\\Root\\git-bash.exe"
+        }
+    }
+}

@@ -56,6 +56,18 @@ SQLite stuff
 python flow-run.py sqlite2.TestExportSQLite marius
 python flow-continue.py 02 marius
 
+Console stuff
+==============
+- activate Anaconda in the corporate machine
+cmd.exe "/K" c:\PROGRA~1\Anaconda3\Scripts\activate.bat c:\PROGRA~1\Anaconda3
+integrated in VSC settings see: settings.json 
+- activate git cmd terminal
+%LOCALAPPDATA%\Microsoft\AppV\Client\Integration\FD19DC5B-9750-48C4-8C82-71001E35740E\Root\git-cmd.exe
+- activate git bash terminal (it is not working starting in a cmd, must be configured in VSC)
+%LOCALAPPDATA%\Microsoft\AppV\Client\Integration\FD19DC5B-9750-48C4-8C82-71001E35740E\Root\git-bash.exe
+- activate Proxy
+python proxy.py (and run the two displayed commands)
+
 Package
 =======
 

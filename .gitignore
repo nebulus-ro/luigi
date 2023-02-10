@@ -10,3 +10,6 @@ build
 
 *.zip
 in-data/*.csv
+docs/test_10_lines.csv
+
+docs/*.db
