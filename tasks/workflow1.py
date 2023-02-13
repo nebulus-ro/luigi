@@ -49,8 +49,7 @@ class CreateStageSQLiteTask(luigi.Task):
         return SQLiteTarget()
 
 class TakeInputFile(luigi.Task):
-    # filename = luigi.Parameter()
-    filename = 'test_1_000_000_lines.csv'
+    filename = luigi.Parameter()
 
     def run(self):
         id = luigi.configuration.get_config().get('session', 'id')

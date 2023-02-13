@@ -67,4 +67,4 @@ python setup.py install
 Workflow1
 =========
 
-python flow-run.py workflow1.TakeInputFile marius
+python flow-run.py workflow1.TakeInputFile marius --filename test_1000_lines.csv
