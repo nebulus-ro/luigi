@@ -37,8 +37,18 @@ with open(f'{folder_name}/context.pickle', 'wb') as handle:
 # start the flow
 config = luigi.configuration.LuigiConfigParser.instance()
 
+# create the arguments
+params = {}
+for i, arg in enumerate(sys.argv):
+    if arg.startswith('--'):
+        key = arg[2:]
+        if i+1 < len(sys.argv) and not sys.argv[i+1].startswith('--'):
+            params[key] = sys.argv[i+1]
+
 # print the tree
 import luigi.tools.deps_tree as deps_tree
-print(deps_tree.print_tree(task_class()))
+task_obj = task_class(**params)
+print(deps_tree.print_tree(task_obj))
 
-luigi.build([task_class()], local_scheduler=True, detailed_summary=False)
+# build the tree
+luigi.build([task_obj], local_scheduler=True, detailed_summary=False)
