@@ -22,7 +22,7 @@ context['userId'] = userId
 context['taskParams'] = tools.get_task_params(sys.argv[3:])
 
 # prepare a new session
-tools.create_session(context, sessionId)
+tools.create_session(context)
 
 # now show the luigi tree and run the flow
 tools.start_luigi(context, sessionId)
