@@ -10,3 +10,4 @@ build
 
 *.zip
 in-data/*.csv
+in-data/.ipynb_checkpoints
