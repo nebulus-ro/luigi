@@ -41,7 +41,7 @@ Production tests
 python flow-run.py word-frequency.TopWords marius
 python flow-continue.py <session-id> marius
 python flow-status.py <session-id> marius
-python flow-extend.py <session-id> tools.FileExistTask data/summary.txt marius
+python flow-extend.py <session-id> marius tools.FileExistTask --filePath data/summary.txt
 
 Luigi CLI Tools
 ===============

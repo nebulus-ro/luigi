@@ -1,48 +1,27 @@
-import platform
-import os
 import sys
-import importlib
-import luigi
-import uuid
-import pickle
-from tools.tools import find_folder
+from tools import tools
 
-guidHead = sys.argv[1]
+# CLI.param1: starting task identification (session prefix)
+prefix = sys.argv[1]
+# CLI.param2: always the userId
 userId = sys.argv[2]
 
-guids = list(find_folder(guidHead, './sessions'))
-if guids:
-    if len(guids) > 1:
-        print(f'Too many sessions start with: {guidHead}. Try a longer sequence.')
-        exit()
-else:
-    print(f'No session starts with: {guidHead}')
-    exit()        
+# if just one session was found starting with the prefix the continue
+isUnique, sessionId = tools.get_session(prefix)
+if not isUnique: exit(2)
 
-guid = guids[0]
-print("Resume session:", guid)
-folder_name = f'sessions/{guid}'
+print("Session:", sessionId)
 
-# load context 
-with open(f'{folder_name}/context.pickle', 'rb') as handle:
-    context = pickle.load(handle)
+# load session's context
+context = tools.load_context(sessionId)
 
-taskSource = context['taskSource']
-taskName = context['taskName']
-print("Head task:", taskSource, taskName)
+print("Head task:", context['taskSource'], context['taskName'])
 print("User:", userId)
 
-module = importlib.import_module(f'tasks.{taskSource}')
-task_class = getattr(module, taskName)
-print(task_class)
+# if not the same user task will not start
+if not userId == context['userId']:
+    print('ERROR: Current user is not the same as the initiator.')
+    exit(1)
 
-# add some settings
-config = luigi.configuration.LuigiConfigParser.instance()
-config.set('session', 'id', guid)
-
-# start the flow
-config = luigi.configuration.LuigiConfigParser.instance()
-
-# print the tree
-import luigi.tools.deps_tree as deps_tree
-print(deps_tree.print_tree(task_class()))
+# print the luigi tree
+tools.status_luigi(context, sessionId)

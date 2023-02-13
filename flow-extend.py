@@ -1,52 +1,36 @@
-import platform
-import os
 import sys
-import importlib
-import luigi
-import uuid
-import pickle
+from tools import tools
 
-guid = sys.argv[1]
-extSource, extName = sys.argv[2].split('.')
-param = None
-if len(sys.argv) == 4:
-    userId = sys.argv[3]
-elif len(sys.argv) == 5:
-    userId = sys.argv[4]
-    param = sys.argv[3]
+# CLI.param1: starting task identification (session prefix)
+prefix = sys.argv[1]
+# CLI.param2: always the userId
+userId = sys.argv[2]
 
-print("Resume session:", guid)
-folder_name = f'sessions/{guid}'
+# if just one session was found starting with the prefix the continue
+isUnique, sessionId = tools.get_session(prefix)
+if not isUnique: exit(2)
+
+print("Resume session:", sessionId)
+
+# extension for current session
+extSource, extName = sys.argv[3].split('.')
 
 # load context 
-with open(f'{folder_name}/context.pickle', 'rb') as handle:
-    context = pickle.load(handle)
+context = tools.load_context(sessionId)
 
-taskSource = context['taskSource']
-taskName = context['taskName']
-print("Head task:", taskSource, taskName)
+print("Head task:", context['taskSource'], context['taskName'])
 print('Extension:', extSource, extName)
 print("User:", userId)
 
-module = importlib.import_module(f'tasks.{extSource}')
-task_class = getattr(module, extName)
-print(task_class)
+# if not the same user task will not start
+if not userId == context['userId']:
+    print('ERROR: Current user is not the same as the initiator.')
+    exit(1)
 
-# add some settings
-config = luigi.configuration.LuigiConfigParser.instance()
-config.set('session', 'id', guid)
+# reconfigure context with the new head
+context['taskSource'] = extSource
+context['taskName'] = extName
+context['taskParams'] = tools.get_task_params(sys.argv[3:])
 
-# start the flow
-config = luigi.configuration.LuigiConfigParser.instance()
-
-# print the tree
-import luigi.tools.deps_tree as deps_tree
-if param is None:
-    print(deps_tree.print_tree(task_class()))
-else:
-    print(deps_tree.print_tree(task_class(param)))
-
-if param is None:
-    luigi.build([task_class()], local_scheduler=True, detailed_summary=False)
-else:
-    luigi.build([task_class(param)], local_scheduler=True, detailed_summary=False)
+# now show the luigi tree and run the flow
+tools.start_luigi(context, sessionId)
