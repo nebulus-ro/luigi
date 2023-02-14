@@ -4,6 +4,8 @@ import os
 import csv
 import pandas as pd
 import pickle
+import logging.config
+import logging
 
 def table_exists(conn, tableName):
     try:
@@ -12,17 +14,28 @@ def table_exists(conn, tableName):
     except sqlite3.OperationalError:
         return False
 
-class SQLiteTarget(luigi.Target):
+class StaTarget(luigi.Target):
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.sessionId = luigi.configuration.get_config().get('session', 'id')
+        self.sessionPath = os.path.join('sessions', self.sessionId)
+        logging.config.fileConfig('logging.conf')
+        self.logger = logging.getLogger('luigi')
+        self.logger.debug('StaTarget: ' + self.sessionPath)
+
+class SQLiteTarget(StaTarget):
 
     STAGE_DB = 'stage.sqlite'
 
-    def __init__(self, value = None):
+    def __init__(self, value = None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.value = value
-        id = luigi.configuration.get_config().get('session', 'id')
-        self.database_path = os.path.join('sessions', id, self.STAGE_DB)
+        self.database_path = os.path.join(self.sessionPath, self.STAGE_DB)
 
     def exists(self):
         if not os.path.exists(self.database_path):
+            self.logger.warning(f'SQLiteTarget: No {self.database_path} file found in target.')
             return False
         if self.value is None:
             return True
@@ -33,13 +46,25 @@ class SQLiteTarget(luigi.Target):
             # string that must uniquely describe an instance of a task
             query = f"SELECT 1 FROM targets WHERE name = '{str(self.value)}'"
             result = cursor.execute(query).fetchone()
+            self.logger.debug('SQLiteTarget: ' + str(result))
             return result is not None
 
     def connect(self):
         return sqlite3.connect(self.database_path)
 
+class StaTask(luigi.Task):
 
-class CreateStageSQLiteTask(luigi.Task):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        logging.config.fileConfig('logging.conf')
+        self.logger = logging.getLogger('luigi')
+        self.sessionId = luigi.configuration.get_config().get('session', 'id')
+        self.sessionPath = os.path.join('sessions', self.sessionId)
+        self.logger.debug('StaTask: ' + self.sessionPath)
+        with open(os.path.join(self.sessionPath, 'context.pickle'), 'rb') as pFile:
+            self.context = pickle.load(pFile)
+
+class CreateStageSQLiteTask(StaTask):
 
     def run(self):
         with self.output().connect() as conn:
@@ -48,13 +73,10 @@ class CreateStageSQLiteTask(luigi.Task):
     def output(self):
         return SQLiteTarget()
 
-class TakeInputFile(luigi.Task):
+class TakeInputFile(StaTask):
     filename = luigi.Parameter()
 
     def run(self):
-        id = luigi.configuration.get_config().get('session', 'id')
-        with open(f'sessions/{id}/context.pickle', 'rb') as ctxFile:
-            ctx = pickle.load(ctxFile)
         DTYPES = {
             'REF_AREA' : 'category',
             'INDICATOR' : 'category',
@@ -66,16 +88,17 @@ class TakeInputFile(luigi.Task):
             'OBS_STATUS' : 'category',
             'CONF_STATUS' : 'category'
         }
-        df = pd.read_csv(f'{ctx["domainRoot"]}/in-data/{self.filename}', sep=';', dtype=DTYPES)
+        inputPath = os.path.join(self.context["domainRoot"], 'in-data', self.filename)
+        self.logger.debug(f'TakeInputFile: Input file: {inputPath}')
+        df = pd.read_csv(inputPath, sep=';', dtype=DTYPES)
         df.to_pickle(self.output().path)
 
     def output(self):
-        id = luigi.configuration.get_config().get('session', 'id')
-        pre, ext = os.path.splitext(self.filename)
-        return luigi.LocalTarget(f'sessions/{id}/{pre}.pickle')
+        pre, _ = os.path.splitext(self.filename)
+        return luigi.LocalTarget(os.path.join(self.sessionPath, pre + '.pickle'))
         
 
-class TestCopyToTable(luigi.Task):
+class TestCopyToTable(StaTask):
     
     TEST_TABLE = 'tests'
 
@@ -86,6 +109,7 @@ class TestCopyToTable(luigi.Task):
         with self.output().connect() as conn:
             # if table tests to not exists, create it
             if not table_exists(conn, self.TEST_TABLE):
+                self.logger.debug(f'TestCopyToTable: First time! Create table {self.TEST_TABLE}.')
                 conn.execute(f"CREATE TABLE {self.TEST_TABLE} (id INTEGER PRIMARY KEY, name TEXT)")
         # Start a transaction
         conn.execute("BEGIN TRANSACTION")
@@ -94,15 +118,17 @@ class TestCopyToTable(luigi.Task):
             conn.execute(f"INSERT INTO {self.TEST_TABLE} (id, name) VALUES (2, 'Jane')")
             # commit the transaction
             conn.commit()
+            self.logger.info('TestCopyToTable: Transaction OK.')
         except:
             # rollback the transaction if something goes wrong
             conn.rollback()
+            self.logger.error('TestCopyToTable: Transaction rollback!')
             raise
 
     def output(self):
         return SQLiteTarget(self)
 
-class TestExportSQLite(luigi.Task):
+class TestExportSQLite(StaTask):
     
     def requires(self):
         return TestCopyToTable()
@@ -122,5 +148,4 @@ class TestExportSQLite(luigi.Task):
 
 
     def output(self):
-        id = luigi.configuration.get_config().get('session', 'id')
-        return luigi.LocalTarget(f'sessions/{id}/TestExportSQLite.csv')
+        return luigi.LocalTarget(os.path.join(self.sessionPath, 'TestExportSQLite.csv'))

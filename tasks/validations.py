@@ -1,31 +1,53 @@
 import luigi
 import yaml
+
 from tasks import workflow1
 
-class Validation1(luigi.Task):
+class Validation1(workflow1.StaTask):
     inputfile = luigi.Parameter()
+    
+    def requires(self):
+        return workflow1.TakeInputFile(self.inputfile)
+
     def run(self):
         print("Running Validation1 for: ", self.inputfile)
+        self.logger.debug("Running Validation1 for: " + self.inputfile)
 
-class Validation2(luigi.Task):
+    def output(self):
+        return self.input()
+
+class Validation2(workflow1.StaTask):
     inputfile = luigi.Parameter()
+    
+    def requires(self):
+        return workflow1.TakeInputFile(self.inputfile)
+
     def run(self):
         print("Running Validation2 for: ", self.inputfile)
+        self.logger.debug("Running Validation2 for: " + self.inputfile)
         raise ValueError('Some error')
 
-class Validation3(luigi.Task):
-    inputfile = luigi.Parameter()
-    def run(self):
-        print("Running Validation3 for: ", self.inputfile)
+    def output(self):
+        return self.input()
 
-class ValidationsTask(luigi.Task):
-    filename = luigi.Parameter()
+class Validation3(workflow1.StaTask):
+    inputfile = luigi.Parameter()
 
     def requires(self):
-        return workflow1.TakeInputFile(self.filename)
+        return workflow1.TakeInputFile(self.inputfile)
 
     def run(self):
-        print("Running Validations")
+        print("Running Validation3 for: ", self.inputfile)
+        self.logger.debug("Running Validation3 for: " + self.inputfile)
+
+    def output(self):
+        return self.input()
+
+
+class ValidationsTask(workflow1.StaTask):
+    inputfile = luigi.Parameter()
+
+    def requires(self):
         with open('tasks/validations.yaml', 'r') as yamlfile:
             config = yaml.safe_load(yamlfile)
         subtasks = {
@@ -33,9 +55,10 @@ class ValidationsTask(luigi.Task):
             "Validation2": Validation2,
             "Validation3": Validation3
         }
-        for task_name, run in config["validations"].items():
-             if run:
-                subtasks[task_name](self.input()).run()
+        self.logger.debug('ValidationsTask' + str(config))
+        retList = [workflow1.TakeInputFile(self.inputfile)] + [subtasks[task_name](self.inputfile) for task_name, run in config["validations"].items() if run]
+        self.logger.debug('ValidationsTask' + str(retList))
+        return retList
 
     def output(self):
-        return self.input()
+        return self.input()[0]
