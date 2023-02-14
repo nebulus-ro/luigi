@@ -1,0 +1,1 @@
+CREATE TABLE primaries (id INTEGER PRIMARY KEY, name TEXT)

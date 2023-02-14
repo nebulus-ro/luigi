@@ -12,3 +12,4 @@ build
 in-data/*.csv
 in-data/.ipynb_checkpoints
 in-data/DTYPES.yaml
+storage/EBSSBS_PRL_A_PRIM.sqlite
