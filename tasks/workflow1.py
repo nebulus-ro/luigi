@@ -6,6 +6,7 @@ import pandas as pd
 import pickle
 import logging.config
 import logging
+import yaml
 
 def table_exists(conn, tableName):
     try:
@@ -31,7 +32,9 @@ class SQLiteTarget(StaTarget):
     def __init__(self, value = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.value = value
+        self.logger.debug('SQLiteTarget: ' + str(value))
         self.database_path = os.path.join(self.sessionPath, self.STAGE_DB)
+        self.logger.debug('SQLiteTarget: ' + self.database_path)
 
     def exists(self):
         if not os.path.exists(self.database_path):
@@ -48,6 +51,14 @@ class SQLiteTarget(StaTarget):
             result = cursor.execute(query).fetchone()
             self.logger.debug('SQLiteTarget: ' + str(result))
             return result is not None
+
+    def create(self):
+        try:
+            with self.connect() as conn:
+                conn.execute(f"INSERT INTO targets (name) VALUES ('{str(self.value)}')")
+                conn.commit()
+        except Exception as ex:
+            self.logger.error(ex)
 
     def connect(self):
         return sqlite3.connect(self.database_path)
@@ -69,6 +80,7 @@ class CreateStageSQLiteTask(StaTask):
     def run(self):
         with self.output().connect() as conn:
             conn.execute("CREATE TABLE targets (id INTEGER PRIMARY KEY, name TEXT)")
+            conn.commit()
 
     def output(self):
         return SQLiteTarget()
@@ -77,21 +89,16 @@ class TakeInputFile(StaTask):
     filename = luigi.Parameter()
 
     def run(self):
-        DTYPES = {
-            'REF_AREA' : 'category',
-            'INDICATOR' : 'category',
-            'ACTIVITY' : 'category',
-            'NUMBER_EMPL' : 'category',
-            'UNIT_MEASURE' : 'category',
-            'UNIT_MULT' : 'category',
-            'DECIMALS' : 'category',
-            'OBS_STATUS' : 'category',
-            'CONF_STATUS' : 'category'
-        }
-        inputPath = os.path.join(self.context["domainRoot"], 'in-data', self.filename)
-        self.logger.debug(f'TakeInputFile: Input file: {inputPath}')
-        df = pd.read_csv(inputPath, sep=';', dtype=DTYPES)
-        df.to_pickle(self.output().path)
+        try:
+            with open(os.path.join(self.context["domainRoot"], 'tasks', 'EBSSBS_PRL_A-PTYPES.yaml'), 'r') as dtFile:
+                DTYPES = yaml.safe_load(dtFile)
+            self.logger.debug(str(DTYPES))
+            inputPath = os.path.join(self.context["domainRoot"], 'in-data', self.filename)
+            self.logger.debug(f'TakeInputFile: Input file: {inputPath}')
+            df = pd.read_csv(inputPath, sep=';', dtype=DTYPES)
+            df.to_pickle(self.output().path)
+        except Exception as ex:
+            self.logger.error(ex)
 
     def output(self):
         pre, _ = os.path.splitext(self.filename)

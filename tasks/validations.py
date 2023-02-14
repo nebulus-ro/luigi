@@ -7,41 +7,44 @@ class Validation1(workflow1.StaTask):
     inputfile = luigi.Parameter()
     
     def requires(self):
-        return workflow1.TakeInputFile(self.inputfile)
+        return [workflow1.TakeInputFile(self.inputfile), workflow1.CreateStageSQLiteTask()]
 
     def run(self):
         print("Running Validation1 for: ", self.inputfile)
         self.logger.debug("Running Validation1 for: " + self.inputfile)
+        self.output().create()
 
     def output(self):
-        return self.input()
+        return workflow1.SQLiteTarget(self)
 
 class Validation2(workflow1.StaTask):
     inputfile = luigi.Parameter()
     
     def requires(self):
-        return workflow1.TakeInputFile(self.inputfile)
+        return [workflow1.TakeInputFile(self.inputfile), workflow1.CreateStageSQLiteTask()]
 
     def run(self):
         print("Running Validation2 for: ", self.inputfile)
         self.logger.debug("Running Validation2 for: " + self.inputfile)
+        self.output().create()
         raise ValueError('Some error')
 
     def output(self):
-        return self.input()
+        return workflow1.SQLiteTarget(self)
 
 class Validation3(workflow1.StaTask):
     inputfile = luigi.Parameter()
 
     def requires(self):
-        return workflow1.TakeInputFile(self.inputfile)
+        return [workflow1.TakeInputFile(self.inputfile), workflow1.CreateStageSQLiteTask()]
 
     def run(self):
         print("Running Validation3 for: ", self.inputfile)
         self.logger.debug("Running Validation3 for: " + self.inputfile)
+        self.output().create()
 
     def output(self):
-        return self.input()
+        return workflow1.SQLiteTarget(self)
 
 
 class ValidationsTask(workflow1.StaTask):
