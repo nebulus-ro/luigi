@@ -15,4 +15,5 @@ docs/test_10_lines.csv
 docs/*.db
 in-data/.ipynb_checkpoints
 in-data/DTYPES.yaml
-storage/EBSSBS_PRL_A_PRIM.sqlite
+storage/*.sqlite
+storage/*.pickle
