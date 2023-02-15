@@ -1,10 +1,9 @@
-from tasks import workflow1
-from tasks import validations
+from tasks import staluigi, validations
 import sqlite3
 import os
 import pickle
 
-class StoreSQLiteTarget(workflow1.StaTarget):
+class StoreSQLiteTarget(staluigi.StaTarget):
 
     def __init__(self, sqlfile, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -22,7 +21,7 @@ class StoreSQLiteTarget(workflow1.StaTarget):
         return sqlite3.connect(self.storagePath)
 
 # add the final EBSSBS_PRL_A_PRIM.sqlite for primary series of EBSSBS_PRL_A 
-class EBSSBS_PRL_A_PRIM(workflow1.StaTask):
+class EBSSBS_PRL_A_PRIM(staluigi.StaTask):
 
     SQL_FILE = 'EBSSBS_PRL_A_PRIM'
     def run(self):

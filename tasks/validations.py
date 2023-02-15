@@ -1,13 +1,13 @@
 import luigi
 import yaml
 
-from tasks import workflow1
+from tasks import staluigi, workflow1
 
-class Validation1(workflow1.StaTask):
+class Validation1(staluigi.StaTask):
     inputfile = luigi.Parameter()
     
     def requires(self):
-        return [workflow1.TakeInputFile(self.inputfile), workflow1.CreateStageSQLiteTask()]
+        return [workflow1.TakeInputFile(self.inputfile), staluigi.CreateStageSQLiteTask()]
 
     def run(self):
         print("Running Validation1 for: ", self.inputfile)
@@ -15,13 +15,13 @@ class Validation1(workflow1.StaTask):
         self.output().create()
 
     def output(self):
-        return workflow1.SQLiteTarget(self)
+        return staluigi.SQLiteTarget(self)
 
-class Validation2(workflow1.StaTask):
+class Validation2(staluigi.StaTask):
     inputfile = luigi.Parameter()
     
     def requires(self):
-        return [workflow1.TakeInputFile(self.inputfile), workflow1.CreateStageSQLiteTask()]
+        return [workflow1.TakeInputFile(self.inputfile), staluigi.CreateStageSQLiteTask()]
 
     def run(self):
         print("Running Validation2 for: ", self.inputfile)
@@ -30,13 +30,13 @@ class Validation2(workflow1.StaTask):
         raise ValueError('Some error')
 
     def output(self):
-        return workflow1.SQLiteTarget(self)
+        return staluigi.SQLiteTarget(self)
 
-class Validation3(workflow1.StaTask):
+class Validation3(staluigi.StaTask):
     inputfile = luigi.Parameter()
 
     def requires(self):
-        return [workflow1.TakeInputFile(self.inputfile), workflow1.CreateStageSQLiteTask()]
+        return [workflow1.TakeInputFile(self.inputfile), staluigi.CreateStageSQLiteTask()]
 
     def run(self):
         print("Running Validation3 for: ", self.inputfile)
@@ -44,10 +44,10 @@ class Validation3(workflow1.StaTask):
         self.output().create()
 
     def output(self):
-        return workflow1.SQLiteTarget(self)
+        return staluigi.SQLiteTarget(self)
 
 
-class ValidationsTask(workflow1.StaTask):
+class ValidationsTask(staluigi.StaTask):
     inputfile = luigi.Parameter()
 
     def requires(self):
