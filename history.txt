@@ -42,6 +42,7 @@ python flow-run.py word-frequency.TopWords marius
 python flow-continue.py <session-id> marius
 python flow-status.py <session-id> marius
 python flow-extend.py <session-id> marius tools.FileExistTask --filePath data/summary.txt
+python flow-clean.py <sess1> ... <sessN> [-a]
 
 Luigi CLI Tools
 ===============
