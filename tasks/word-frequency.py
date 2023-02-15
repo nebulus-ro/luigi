@@ -6,7 +6,6 @@ import pickle
 import logging
 import os
 
-# os.chdir('E:\Work\A5\production_architecture\luigi')
 print(os.getcwd())
 
 class GetTopBooks(luigi.Task):
