@@ -1,0 +1,58 @@
+First field: "DATAFLOW" TEXT,
+I will ignore now because I believe that flows do not interact 
+so will have different tables (or even databases) for each flow
+(the flows separation hipotesys must be verified with the owner)
+
+These are the fields that will form the key (greoup1)
+
+  "FREQ" TEXT,
+  "TIME_PERIOD" INTEGER,
+  "REF_AREA" TEXT,
+  "INDICATOR" TEXT,
+  "ACTIVITY" TEXT,
+  "NUMBER_EMPL" TEXT,
+  "PRODUCT" TEXT,
+  "TURNOVER" TEXT,
+  "CLIENT_RESIDENCE" TEXT,
+  "UNIT_MEASURE" TEXT,
+  "UNIT_MULT" TEXT,
+  "DECIMALS" TEXT,
+
+These are the fields that will form the value (group2)
+
+  "OBS_STATUS" TEXT,
+  "OBS_STATUS_1" TEXT,
+  "CONF_STATUS" TEXT,
+  "CONF_STATUS_1" TEXT,
+  "OBS_VALUE" REAL,
+
+I don't know what is this
+(maybe a real example will help, or asking the owner)
+(for now I ignore them)
+
+  "DOMINANCE" REAL,
+  "SHARE_SECOND" REAL,
+  "COMMENT_OBS" REAL
+
+Structure:
+==========
+Will be a table for keys:
+Flow1Keys(id primary key, unique(group1))
+
+And a table for values:
+Flow1Values(timestamp, keyId, group2)
+
+Ops:
+====
+1. Adding a row (group11, group21):
+    - try to insert a key if do not exists (group11)
+    - get the keyId for group11
+    - add group21 to values if the latest timestamp for keyId has different values (group21 != group2(last timestamp))
+
+2. Get the last value for a key
+3. Get the last value for a key before a timestamp (snapshot)
+
+Some questions:
+- What means a transaction in this context?
+- Performance?
+- Last values for a key and all others to be in different tables?
