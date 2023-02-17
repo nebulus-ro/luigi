@@ -6,7 +6,8 @@ from tools import tools
 # CLI.param1: starting task identification (module.name)
 taskSource, taskName = sys.argv[1].split('.')
 # CLI.param2: always the userId
-userId = sys.argv[2]
+# userId = sys.argv[2]
+userId = 'Marius'
 
 print("Head Task:", taskSource, taskName)
 print("User:", userId)

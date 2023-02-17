@@ -36,7 +36,7 @@ class Validation3(staluigi.StaTask):
     inputfile = luigi.Parameter()
 
     def requires(self):
-        return [workflow1.TakeInputFile(self.inputfile), staluigi.CreateStageSQLiteTask()]
+        return [workflow1.TakeInputFile(self.inputfile), staluigi.CreateStageSQLiteTask(), Validation1(self.inputfile)]
 
     def run(self):
         print("Running Validation3 for: ", self.inputfile)
