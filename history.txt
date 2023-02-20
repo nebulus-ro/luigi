@@ -68,6 +68,7 @@ integrated in VSC settings see: settings.json
 %LOCALAPPDATA%\Microsoft\AppV\Client\Integration\FD19DC5B-9750-48C4-8C82-71001E35740E\Root\git-bash.exe
 - activate Proxy
 python proxy.py (and run the two displayed commands)
+- ana.bat for configuring path to work with anaconda
 
 Package
 =======
