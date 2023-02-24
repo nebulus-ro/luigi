@@ -85,3 +85,4 @@ python flow-run.py workflow1.TakeInputFile marius --filename test_1000_lines.csv
 python flow-run.py validations.ValidationsTask marius --inputfile test_1000_lines.csv
 python flow-clean.py
 python flow-run.py storage.EBSSBS_PRL_A_PRIM marius
+python flow-run.py storage.Add_EBSSBS_PRL_A_PRIM marius --inputfile test_1000_lines.csv

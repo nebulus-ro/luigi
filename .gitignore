@@ -18,6 +18,7 @@ in-data/DTYPES.yaml
 storage/*.sqlite
 storage/*.pickle
 proxy.py
-storage/.ipynb_checkpoints/Solution1-checkpoint.ipynb
+storage/.ipynb_checkpoints
+
 *.html
 .vscode
