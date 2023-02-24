@@ -20,3 +20,4 @@ storage/*.pickle
 proxy.py
 storage/.ipynb_checkpoints/Solution1-checkpoint.ipynb
 *.html
+.vscode

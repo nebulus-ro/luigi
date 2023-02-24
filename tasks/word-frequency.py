@@ -43,7 +43,7 @@ class DownloadBooks(luigi.Task):
     REPLACE_LIST = """.,"';_[]:*-"""
 
     def requires(self):
-        return GetTopBooks()
+        return [GetTopBooks()]
 
     def output(self):
         id = luigi.configuration.get_config().get('session', 'id')
@@ -77,7 +77,7 @@ class CountWords(luigi.Task):
     FileID = luigi.IntParameter()
 
     def requires(self):
-        return DownloadBooks(FileID=self.FileID)
+        return [DownloadBooks(FileID=self.FileID)]
 
     def output(self):
         id = luigi.configuration.get_config().get('session', 'id')
