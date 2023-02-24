@@ -40,7 +40,7 @@ Production tests
 
 python flow-run.py word-frequency.TopWords marius
 python flow-continue.py <session-id> marius
-python flow-status.py <session-id> marius
+python flow-status.py <session-id> marius [-html]
 python flow-extend.py <session-id> marius tools.FileExistTask --filePath data/summary.txt
 python flow-clean.py <sess1> ... <sessN> [-a]
 
@@ -67,7 +67,7 @@ integrated in VSC settings see: settings.json
 - activate git bash terminal (it is not working starting in a cmd, must be configured in VSC)
 %LOCALAPPDATA%\Microsoft\AppV\Client\Integration\FD19DC5B-9750-48C4-8C82-71001E35740E\Root\git-bash.exe
 - activate Proxy
-python proxy.py (and run the two displayed commands)
+python proxy.py (and run the two displayed commands)pro
 - ana.bat for configuring path to work with anaconda
 
 Package

@@ -5,6 +5,7 @@ from tools import tools
 prefix = sys.argv[1]
 # CLI.param2: always the userId
 userId = sys.argv[2]
+isHTML = "-html" in sys.argv
 
 # if just one session was found starting with the prefix the continue
 isUnique, sessionId = tools.get_session(prefix)
@@ -24,4 +25,4 @@ if not userId == context['userId']:
     exit(1)
 
 # print the luigi tree
-tools.status_luigi(context, sessionId)
+tools.status_luigi(context, sessionId, isHTML=isHTML)
