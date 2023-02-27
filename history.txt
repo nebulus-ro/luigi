@@ -69,6 +69,8 @@ integrated in VSC settings see: settings.json
 - activate Proxy
 python proxy.py (and run the two displayed commands)pro
 - ana.bat for configuring path to work with anaconda
+sync with github
+- git pull --tags origin master
 
 Package
 =======
